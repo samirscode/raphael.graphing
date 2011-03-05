@@ -1,0 +1,137 @@
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+	<script src="../vendor/raphael.js"></script>
+	<script src="../lib/raphael.graphing.js"></script>
+	<script src="../lib/math.js"></script>
+	<script src="../lib/raphael.gill_sans_400.font.js" type="text/javascript"></script>
+
+	<style>
+	body { font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif; }
+	</style>
+</head>
+<body>
+
+	<h1>Graphing in Raphael</h1>
+	<div id="graph1" style="width:400px; height:400px; border:1px solid #ccc; float:left; margin-right:40px;"></div>
+	<div style="float:left;width:400px;">
+		<ul>
+			<li><a href="#" onclick="graph1.clear(); return false;">Clear graph</a></li>
+			<li><a href="#" onclick="graph1.axes_labels.hide(); return false;">Hide labels</a></li>
+			<li><a href="#" onclick="graph1.axes_labels.show(); return false;">Show labels</a></li>
+			<li><a href="#" onclick="ellipse.hide(); return false;">Hide orange ellipse</a></li>
+			<br />
+			<li>Adjust the graph<br />
+				<textarea id='graph_input' style="width:100%;height:200px;">
+graph1.init('graph', {x_min: -4, x_max:4, draw_grid: true, draw_axes: true, labels: true})
+graph1.attrs = { 'stroke': "blue", 'stroke-width': 2 }
+graph1.plot("cos(x)")
+graph1.attrs = { 'stroke': "red", 'stroke-width': 4 }
+graph1.plot(["5*t*cos(pi*t)", "5*t*sin(pi*t)"],0,1)
+graph1.attrs = { 'stroke': "green", 'stroke-width': 2 }
+graph1.marker = 'arrowdot'
+graph1.line([0,1], [pi/2,1])
+graph1.dot([pi,0], "open", cpi, 'above')
+graph1.text([-2.5,-2.5], "Text on graph")
+graph1.marker = null
+graph1.arc([-3,3], [2,3], 3 )
+graph1.attrs = { 'stroke': "purple", 'stroke-width': 2.5 }
+graph1.curve([[-2,-2], [-2,2], [-1,-1], [-1,1] ] )
+graph1.attrs = { 'stroke': "orange", 'stroke-width': 5 }
+ellipse = graph1.ellipse( [2,-4], 4, 2)
+graph1.attrs = { 'stroke': "lightblue", 'stroke-width': 6 }
+graph1.rect( [1,1], [2,-2] )
+				</textarea>
+				<input type="button" value="submit" onclick="graph.display($('#graph_input').val());return false;">
+			</li>
+		</ul>
+
+	</div>
+	<div style="clear:both"></div>
+	<div id="data"></div>
+	<script>
+		var graph1;
+		var ellipse;
+		$().ready(function(){
+			paper  = new Raphael('graph1', 400, 400);
+			graph1 = paper.graph(400,400,20, {draw_grid: true, draw_axes: true, labels: true})
+			graph1.display($('#graph_input').val());
+		});
+	</script>
+
+
+
+	<hr />
+	
+	<div id="graph2" style="width:400px; height:400px; border:1px solid #ccc; float:left; margin-right:40px;"></div>
+	<div style="clear:both;"></div>
+
+	<script>
+		paper2 = new Raphael('graph2', 400, 400);
+		graph2 = paper2.graph(400,400,20, {x_min: -4, x_max:4, draw_grid: false, draw_axes: false, labels: false})
+		var set;
+		p = []
+		with (Math) 
+		for (var x = -2; x < 2; x += 0.01)
+			p[p.length] = [x, f(x)]
+		graph2.path(p)
+		px = 1
+
+		function f(x) { return x*x*x-x }
+
+		$('#graph2').mousemove(function(event) {
+
+			graph2.stroke = "red"
+			py = f(px)
+			h = .01
+			dy = f(px+h)-py
+			m = dy/h
+			if (set) set.remove();
+			set = paper2.set();
+			if (m>=0) {
+				set.push(graph2.path([[px-.5,py-.5*m],[px+.5,py+.5*m],[px+.5,py-.5*m],[px-.5,py-.5*m]], 'tangent'))
+				set.push(graph2.text([px+.5,py],m.toFixed(1),"right","rise"))                          
+				set.push(graph2.text([px,py-.5*m],"1","below","run"))
+			} else {                                                                        
+				set.push(graph2.path([[px-.5,py-.5*m],[px+.5,py+.5*m],[px-.5,py+.5*m],[px-.5,py-.5*m]], 'tangent'))
+				set.push(graph2.text([px-.5,py],m.toFixed(1),"left","rise"))
+				set.push(graph2.text([px,py+.5*m],"1","below","run"))
+			}
+			px = (event.pageX - this.offsetLeft - graph2.origin.x)/graph2.xunitlength;
+			var y = event.pageY - this.offsetTop;
+
+		});
+	</script>
+	
+
+	<hr />
+	
+	<div id="graph3" style="width:400px; height:400px; border:1px solid #ccc; float:left; margin-right:40px;"></div>
+	<div style="clear:both;"></div>
+	
+	<script>
+		paper3 = new Raphael('graph3', 400, 400);
+		graph3 = paper3.graph(400,400,20, {x_min: -4, x_max:4, draw_grid: false, draw_axes: false, labels: false})
+
+		graph3.marker = "dot"
+		a = []
+		n = 9
+
+	
+		graph3.circle([0,0],1)
+		a = [-.6,-.8]
+		b = [ .6,-.8]
+		graph3.path([a,[0,0],b])
+		graph3.attrs = { 'stroke': "red", 'stroke-width': 2 }
+		graph3.path([a,[-1, 0],b,[-.8,.6],a,[0,1],b,[.8,.6],a,[1,0],b])
+				
+	</script>
+
+
+
+
+
+
+</body>
+</html>
